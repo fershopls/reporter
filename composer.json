@@ -1,0 +1,12 @@
+{
+  "autoload": {
+    "psr-4": {
+      "lib\\": "lib/",
+      "Models\\": "propel/Models/"
+    }
+  },
+  "require": {
+    "propel/propel": "~2.0@dev",
+    "phine/path": "^1.1"
+  }
+}
