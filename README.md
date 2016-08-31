@@ -9,3 +9,24 @@ https://juanalbertogt.wordpress.com/2014/04/12/configurar-conexion-sql-server-co
 
 # Setup settings
 Copy `/config.php.txt` into a new folder called support: `/support/config.php`. Then fill it with your credentials.
+
+```php
+<?php
+
+return array (
+    'SQLSRV' => array(
+        'database' => 'DATABASE SERVER ADDRESS',
+        'username' => 'SQLSRV USERNAME',
+        'password' => 'SQLSRV PASSWORD',
+    ),
+
+    'DIRS' => array(
+        'cache' => '%/support/cache/',
+        'output' => '%/',
+    ),
+
+    'DEFAULT' => array(
+        'cache_store_minutes' => 120,
+    ),
+);
+```
