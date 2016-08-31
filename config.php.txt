@@ -1,0 +1,18 @@
+<?php
+
+return array (
+    'SQLSRV' => array(
+        'database' => '',
+        'username' => '',
+        'password' => '',
+    ),
+
+    'DIRS' => array(
+        'cache' => '%/support/cache/',
+        'output' => '%/',
+    ),
+
+    'DEFAULT' => array(
+        'cache_store_minutes' => 120,
+    ),
+);
