@@ -175,6 +175,7 @@ foreach ($db_worker_concept_dic as $db_slug => $_db_period)
             $_period_type_key = $db_period_type_dic[$db_slug][$_period_type_id]['key'];
 
             $csv_rows[$worker_id][$dh->getConceptId('Database')] = $db_slug;
+            $csv_rows[$worker_id][$dh->getConceptId('Worker code')] = $db_worker_dic[$db_slug][$worker_id]['codigoempleado'];
             $csv_rows[$worker_id][$dh->getConceptId('Worker name')] = $db_worker_dic[$db_slug][$worker_id]['nombrelargo'];
             $csv_rows[$worker_id][$dh->getConceptId('Period type')] = $_period_type_key;
             $csv_rows[$worker_id][$dh->getConceptId('Period no.')] = $db_period_dic[$db_slug][$period_id]['numeroperiodo'];
@@ -198,8 +199,6 @@ foreach ($db_worker_concept_dic as $db_slug => $_db_period)
                 $_concept_type_last = $_concept_type;
                 foreach ($_concept_group as $_concept_key => $i)
                 {
-                    dd($_concept_type . ' '. $_concept_key);
-                    sleep(1);
                     $concept_value = isset($_db_concept[$_concept_key])?$_db_concept[$_concept_key]:0;
                     $concept_row = $dh->getConceptId($db_key_concept_dic[$_concept_key]['descripcion']);
                     $csv_rows[$worker_id][$concept_row] = $concept_value;
