@@ -158,28 +158,6 @@ foreach ($used as $str_used => $counter)
 # Prepare to Export
 dd ("[CSV] Preparing to export");
 
-# Register Headers
-$dh->getConceptId('Database');
-$dh->getConceptId('Worker name');
-$dh->getConceptId('Period type');
-$dh->getConceptId('Period no.');
-$dh->getConceptId('Period begin');
-$dh->getConceptId('Period end');
-
-$_concept_type_last = null;
-foreach ($db_concept_ordered  as $_concept_type => $_concept_group)
-{
-    if ($_concept_type_last && $_concept_type_last != $_concept_type)
-    {
-        $dh->getConceptId("({$_concept_type_last}) Total");
-    }
-    $_concept_type_last = $_concept_type;
-    foreach ($_concept_group as $_concept_key => $i)
-    {
-        $dh->getConceptId($db_key_concept_dic[$_concept_key]['descripcion']);
-    }
-}
-
 $csv_rows = [];
 foreach ($db_worker_concept_dic as $db_slug => $_db_period)
 {
@@ -199,22 +177,23 @@ foreach ($db_worker_concept_dic as $db_slug => $_db_period)
 
             $_concept_type_last = null;
             $_concept_type_total = 0;
-            foreach ($_db_concept as $concept_key => $concept_value)
+            $db_concept_ordered['FINAL'] = [];
+            foreach ($db_concept_ordered  as $_concept_type => $_concept_group)
             {
-                $_cpt_type = $db_key_concept_dic[$concept_key]['tipoconcepto'];
-                if ($_concept_type_last && $_concept_type_last != $_cpt_type)
+                if ($_concept_type_last && $_concept_type_last != $_concept_type && $_concept_type_last != 'N')
                 {
-                    // Todo: fix this bullshit
-                    $concept_row = $dh->getConceptId("({$_cpt_type}) Total");
+                    $concept_row = $dh->getConceptId("({$_concept_type_last}) Total");
                     $csv_rows[$worker_id][$concept_row] = $_concept_type_total;
                     $_concept_type_total = 0;
                 }
-                
-                $_concept_type_last = $_cpt_type;
-                $_concept_type_total += $concept_value;
-
-                $concept_row = $dh->getConceptId($db_key_concept_dic[$concept_key]['descripcion']);
-                $csv_rows[$worker_id][$concept_row] = $concept_value;
+                $_concept_type_last = $_concept_type;
+                foreach ($_concept_group as $_concept_key => $i)
+                {
+                    $concept_value = isset($_db_concept[$_concept_key])?$_db_concept[$_concept_key]:0;
+                    $concept_row = $dh->getConceptId($db_key_concept_dic[$_concept_key]['descripcion']);
+                    $csv_rows[$worker_id][$concept_row] = $concept_value;
+                    $_concept_type_total += $concept_value;
+                }
             }
         }
     }
@@ -232,5 +211,5 @@ foreach ($csv_rows as $csv_row)
     $csv->writerow($rows);
 }
 
-file_put_contents(Path::join([MASTER_DIR, 'output.csv']), $csv->get());
+file_put_contents(Path::join([MASTER_DIR, 'support', 'output.csv']), $csv->get());
 dd ("[CSV] [Done]");
