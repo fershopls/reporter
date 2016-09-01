@@ -2,54 +2,55 @@
 define("MASTER_DIR", realpath(__DIR__));
 require MASTER_DIR . '/vendor/autoload.php';
 
-function dd ($string = '', $return = 0) {
-    echo $string . "\t\t\t\t\t";
-    if ($return) echo "\r";
-    else echo "\n";
-}
+function dd ($string = '', $return = 0) {echo $string . "\t\t\t\t\t"; if ($return) echo "\r"; else echo "\n";}
 
 use Phine\Path\Path;
-use lib\Cache\Cache;
-use lib\Config\ConfigManager;
+use lib\Data\OutputManager;
+use lib\Settings\SettingsManager;
+use lib\Cache\CacheDriver;
 use lib\Data\StringKey;
-use lib\Data\DataHandler;
-use lib\Data\DirectoryManager;
+
 use lib\PDO\MasterPDO;
-use lib\PDO\DatabaseInterface;
 use lib\Query\DatabaseQuery;
+use lib\PDO\DatabaseInterface;
 
-$settings = new ConfigManager(include(Path::join([MASTER_DIR, 'support', 'config.php'])));
-$dir_stack = new DirectoryManager($settings->get('DIRS'));
+use lib\Data\DataHandler;
+use lib\CSV\CSV;
 
-foreach ($settings->get('DIRS') as $slug => $route)
-{
-    $route = preg_replace('/^(\%[\\\\\/]?)/', MASTER_DIR.DIRECTORY_SEPARATOR, $route);
-    if (!file_exists($route))
-        mkdir($route, 0777, true);
-}
+# Global Libraries
 
-$settings_cache_store_minutes = $settings->get('DEFAULT.cache_store_minutes');
+$settings = new SettingsManager(include(Path::join([MASTER_DIR, 'support', 'config.php'])));
 
-$cacheDriver = new Cache(Path::join([MASTER_DIR, $settings->get('DIRS.cache')]));
+$output = new OutputManager($settings->get('DIRS'));
+$output->setAlias('/([\\\\\/])/', DIRECTORY_SEPARATOR);
+$output->setAlias('/^(\%[\\\\\/]?)/', MASTER_DIR . DIRECTORY_SEPARATOR);
 
-$masterPdo = new MasterPDO(array(
+$cache = new CacheDriver($output->get('cache'));
+
+
+
+$master = new MasterPDO(array(
     'hosting' => $settings->get('SQLSRV.database'),
     'username' => $settings->get('SQLSRV.username'),
     'password' => $settings->get('SQLSRV.password'),
 ));
 
 $dbq = new DatabaseQuery();
-$dbi = new DatabaseInterface($masterPdo, [], $cacheDriver);
+$dbi = new DatabaseInterface($master, [], $cache);
+
+
+
 $dh = new DataHandler();
-$csv = new lib\CSV\CSV();
+$csv = new CSV();
+
 
 
 # Get Available Databases
-$dbs = $cacheDriver->fallback('dbs', [$masterPdo], function($master){
+$dbs = $cache->fallback('dbs', [$master, $dbq], function(MasterPDO $master, DatabaseQuery $dbq){
     $dbs = [];
     $i = 0;
     $rows = $master->using('nomGenerales')
-        ->query("SELECT [RutaEmpresa] FROM [nomGenerales].[dbo].[NOM10000] GROUP BY [RutaEmpresa]")
+        ->query($dbq->getDatabaseDic())
         ->fetchAll();
     foreach ($rows as $row)
     {
@@ -58,11 +59,11 @@ $dbs = $cacheDriver->fallback('dbs', [$masterPdo], function($master){
         else
             $i++;
     }
-    echo "DBS: (".count($dbs).") Found. ({$i}) Lost." . PHP_EOL;
+    dd("DBS: (".count($dbs).") Found. ({$i}) Lost.");
     return $dbs;
-}, $settings_cache_store_minutes);
+}, $settings->get('DEFAULT.cache_store_minutes', 30));
 $dbi->setDatabases($dbs);
-echo "DBS: (".count($dbs).") Loaded." . PHP_EOL;
+dd("DBS: (".count($dbs).") Loaded.");
 
 
 
@@ -74,11 +75,10 @@ $dbi->callback('dic',function ($req, $res) {
 });
 
 
-# Dictionaries
 
+# DBI Dictionaries
 
 $db_worker_dic = $dbi->set($dbq->getDatabaseWorkerDic())
-    ->cache('wdic')
     ->execute('dic');
 
 $db_period_dic = $dbi->set($dbq->getPeriodDic())
@@ -100,12 +100,11 @@ $db_key_concept_dic = $dbi->set($dbq->getConceptDic())
         return $res;
     });
 
+
 # Solve Relationships
 
-$used ['databases'] = [];
-$used ['workers'] = 0;
-$used ['workers_dumped'] = 0;
-$used ['rows'] = 0;
+$used ['databases'] = []; $used ['workers'] = 0;
+$used ['workers_dumped'] = 0; $used ['rows'] = 0;
 #
 $db_worker_concept_dic = [];
 $db_concept_ordered = [];
@@ -121,8 +120,8 @@ foreach ($db_worker_dic as $db_slug => $workers)
             'period_begin' => 18,
             'period_end' => 20,
         ];
-        $q = $masterPdo->using($db_slug)->prepare($dbq->getWorkerMovement());
-        dd ("[{$w}/$w_num] -> {$worker['idempleado']} query..", 1);
+        $q = $master->using($db_slug)->prepare($dbq->getWorkerMovement());
+        dd ("[{$w}/$w_num] -> {$worker['idempleado']} Query...", 1);
         $q->execute($params);
 
         $rows = $q->fetchAll();
@@ -146,6 +145,7 @@ foreach ($db_worker_dic as $db_slug => $workers)
 
     }
 }
+
 
 # Relationships Info
 foreach ($used as $str_used => $counter)
@@ -211,5 +211,6 @@ foreach ($csv_rows as $csv_row)
     $csv->writerow($rows);
 }
 
-file_put_contents(Path::join([MASTER_DIR, 'support', 'output.csv']), $csv->get());
-dd ("[CSV] [Done]");
+$_output = Path::join([$output->get('output'), 'output.csv']);
+file_put_contents($_output, $csv->get());
+dd ("[CSV] [Done] ".$_output);

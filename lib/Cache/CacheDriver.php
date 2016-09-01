@@ -5,15 +5,15 @@ namespace lib\Cache;
 use lib\Cache\Serializer;
 use Phine\Path\Path;
 
-class Cache {
+class CacheDriver {
 
     protected $serialize_dir;
     protected $life_time;
 
     public function __construct($serialize_dir)
     {
-        // Todo: make sure that directory exists
-        $this->serialize_dir = realpath($serialize_dir);
+        if (file_exists($serialize_dir) && is_dir($serialize_dir))
+            $this->serialize_dir = realpath($serialize_dir);
         $this->life_time = new LifeTime($serialize_dir);
     }
 

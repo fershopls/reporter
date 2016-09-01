@@ -1,8 +1,8 @@
 <?php
 
-namespace lib\Config;
+namespace lib\Settings;
 
-class ConfigManager {
+class SettingsManager {
 
     protected $settings;
 
@@ -32,13 +32,6 @@ class ConfigManager {
             }
         }
         return ($arrayResult)?$arrayResult:$fallback;
-    }
-
-    protected function solve ($index, $array)
-    {
-        if (isset($array[$index]))
-            return $array[$index];
-        else return false;
     }
 
 }

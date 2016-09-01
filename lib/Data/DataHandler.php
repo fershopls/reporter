@@ -26,8 +26,7 @@ class DataHandler {
     public function setConceptHeader ($concept_id, $string) {
         $this->headers[self::KEY_CONCEPT_PREFIX . $concept_id] = $string;
     }
-
-    // Todo: Separate $id and $string
+    
     public function getConceptId($string) {
         $key_string = StringKey::get($string);
         $key_concept = array_search($key_string, $this->getConcepts());

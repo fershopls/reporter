@@ -3,9 +3,7 @@
 namespace lib\PDO;
 
 use lib\PDO\MasterPDO;
-use lib\Cache\Cache;
-
-// Todo: Bug on cache
+use lib\Cache\CacheDriver;
 
 class DatabaseInterface {
 
@@ -20,7 +18,7 @@ class DatabaseInterface {
     protected $cache_id;
     protected $cache_lifetime;
 
-    public function __construct(MasterPDO $master, $databases_array, Cache $cache)
+    public function __construct(MasterPDO $master, $databases_array, CacheDriver $cache)
     {
         $this->pdo = $master;
         $this->databases_array = $databases_array;
