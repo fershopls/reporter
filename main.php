@@ -158,6 +158,12 @@ foreach ($used as $str_used => $counter)
 # Prepare to Export
 dd ("[CSV] Preparing to export");
 
+$concept_type_string = [
+    "D" => 'Deducciones',
+    "P" => 'Percepciones',
+    "O" => 'Obligaciones',
+];
+
 $csv_rows = [];
 foreach ($db_worker_concept_dic as $db_slug => $_db_period)
 {
@@ -180,15 +186,20 @@ foreach ($db_worker_concept_dic as $db_slug => $_db_period)
             $db_concept_ordered['FINAL'] = [];
             foreach ($db_concept_ordered  as $_concept_type => $_concept_group)
             {
-                if ($_concept_type_last && $_concept_type_last != $_concept_type && $_concept_type_last != 'N')
+                if ($_concept_type_last && $_concept_type_last != $_concept_type)
                 {
-                    $concept_row = $dh->getConceptId("({$_concept_type_last}) Total");
-                    $csv_rows[$worker_id][$concept_row] = $_concept_type_total;
+                    if ($_concept_type_last != 'N')
+                    {
+                        $concept_row = $dh->getConceptId("Total ".$concept_type_string[$_concept_type_last]);
+                        $csv_rows[$worker_id][$concept_row] = $_concept_type_total;
+                    }
                     $_concept_type_total = 0;
                 }
                 $_concept_type_last = $_concept_type;
                 foreach ($_concept_group as $_concept_key => $i)
                 {
+                    dd($_concept_type . ' '. $_concept_key);
+                    sleep(1);
                     $concept_value = isset($_db_concept[$_concept_key])?$_db_concept[$_concept_key]:0;
                     $concept_row = $dh->getConceptId($db_key_concept_dic[$_concept_key]['descripcion']);
                     $csv_rows[$worker_id][$concept_row] = $concept_value;
