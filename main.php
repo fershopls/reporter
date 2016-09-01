@@ -117,11 +117,12 @@ foreach ($db_worker_dic as $db_slug => $workers)
         $w++; $used['workers']++;
         $params = [
             'worker_id' => $worker['idempleado'],
-            'period_begin' => 18,
-            'period_end' => 20,
+            'period_begin' => '20160101 00:00',
+            'period_end'   => '20160601 00:00',
         ];
         $q = $master->using($db_slug)->prepare($dbq->getWorkerMovement());
-        dd ("[{$w}/$w_num] -> {$worker['idempleado']} Query...", 1);
+        $_percent = round($w*100/$w_num);
+        dd ("{$_percent}% [{$w}/$w_num] -> {$worker['idempleado']} Query...", 1);
         $q->execute($params);
 
         $rows = $q->fetchAll();
@@ -140,7 +141,7 @@ foreach ($db_worker_dic as $db_slug => $workers)
             $db_concept_ordered [$_cpt_type][$_cpt_key] = 1;
 
             $db_worker_concept_dic [$db_slug] [$row['idperiodo']] [$worker['idempleado']] [$_cpt_key] = $row['importetotal'];
-            dd ("[{$w}/$w_num] -> {$q} from {$q_num}", 1);
+            dd ("{$_percent}% [{$w}/$w_num] -> {$q} from {$q_num}", 1);
         }
 
     }
