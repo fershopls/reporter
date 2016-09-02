@@ -115,7 +115,12 @@ $used ['databases'] = []; $used ['workers'] = 0;
 $used ['workers_dumped'] = 0; $used ['rows'] = 0;
 #
 $db_worker_concept_dic = [];
-$db_concept_ordered = [];
+$db_concept_ordered = [
+    'P' => [],
+    'D' => [],
+    'N' => [],
+    'O' => [],
+];
 foreach ($db_worker_dic as $db_slug => $workers)
 {
     dd("[{$db_slug}]");
@@ -216,6 +221,7 @@ foreach ($db_worker_concept_dic as $db_slug => $_db_period)
                     $_concept_type_total += $concept_value;
                 }
             }
+
         }
     }
 }

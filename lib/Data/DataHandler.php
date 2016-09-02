@@ -39,7 +39,7 @@ class DataHandler {
         array_push($this->concepts, $key_string);
         $concept_id = max(array_keys($this->getConcepts()));
         $this->setConceptHeader($concept_id, $string);
-        return $concept_id;
+        return self::KEY_CONCEPT_PREFIX.$concept_id;
     }
 
     public function enterprise ($callable) {
