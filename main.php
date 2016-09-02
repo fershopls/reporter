@@ -1,8 +1,8 @@
 <?php
 define("MASTER_DIR", realpath(__DIR__));
+define("MASTER_DEBUG", true);
 require MASTER_DIR . '/vendor/autoload.php';
 
-function dd ($string = '', $return = 0) {echo $string . "\t\t\t\t\t"; if ($return) echo "\r"; else echo "\n";}
 
 use Phine\Path\Path;
 use lib\Data\OutputManager;
@@ -16,6 +16,15 @@ use lib\PDO\DatabaseInterface;
 
 use lib\Data\DataHandler;
 use lib\CSV\CSV;
+
+# User Input
+
+$_parameters = array(
+    'period_begin'  => '20160101 00:00',
+    'period_end'    => '20160701 00:00',
+);
+
+function dd ($string = '', $return = 0) { if (!MASTER_DEBUG) return; echo $string . "\t\t\t\t\t"; if ($return) echo "\r"; else echo "\n";}
 
 # Global Libraries
 
@@ -117,8 +126,8 @@ foreach ($db_worker_dic as $db_slug => $workers)
         $w++; $used['workers']++;
         $params = [
             'worker_id' => $worker['idempleado'],
-            'period_begin' => '20160101 00:00',
-            'period_end'   => '20160601 00:00',
+            'period_begin' => $_parameters['period_begin'],
+            'period_end'   => $_parameters['period_end'],
         ];
         $q = $master->using($db_slug)->prepare($dbq->getWorkerMovement());
         $_percent = round($w*100/$w_num);
