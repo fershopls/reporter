@@ -238,6 +238,7 @@ foreach ($csv_rows as $csv_row)
     $csv->writerow($rows);
 }
 
-$_output = Path::join([$output->get('output'), 'output.csv']);
+date_default_timezone_set("America/Mexico_City");
+$_output = Path::join([$output->get('output'), 'O'.date("YmdTHis",time()).'.csv']);
 file_put_contents($_output, $csv->get());
 dd ("[CSV] [Done] ".$_output);
