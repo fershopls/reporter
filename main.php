@@ -31,7 +31,6 @@ function dd ($string = '', $return = 0) { if (!MASTER_DEBUG) return; echo $strin
 $settings = new SettingsManager(include(Path::join([MASTER_DIR, 'support', 'config.php'])));
 
 $output = new OutputManager($settings->get('DIRS'));
-$output->setAlias('/([\\\\\/])/', DIRECTORY_SEPARATOR);
 $output->setAlias('/^(\%[\\\\\/]?)/', MASTER_DIR . DIRECTORY_SEPARATOR);
 
 $cache = new CacheDriver($output->get('cache'));

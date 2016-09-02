@@ -10,6 +10,7 @@ class OutputManager {
     public function __construct($output_routes = [])
     {
         $this->stack = $output_routes;
+        $this->setAlias('/([\\\\\/])/', DIRECTORY_SEPARATOR);
     }
 
     public function setAlias ($regex, $value)
