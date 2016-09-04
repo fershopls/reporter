@@ -2,6 +2,7 @@
 define("MASTER_DIR", realpath(__DIR__).'/..');
 require MASTER_DIR . '/vendor/autoload.php';
 
+date_default_timezone_set("America/Mexico_City");
 
 use Phine\Path\Path;
 use lib\Data\OutputManager;
@@ -34,41 +35,51 @@ $dbi = new DatabaseInterface($master, [], $cache);
 
 # Get Available Databases
 
-$dbs = [];
-$i = 0;
-$rows = $master->using('nomGenerales')
-    ->query($dbq->getDatabaseDic())
-    ->fetchAll();
-foreach ($rows as $row)
-{
-    if (isset($row[0]) && $row[0] && $master->testConnection($row[0]))
-        $dbs[] = $master->using($row[0])?$row[0]:null;
-    else
-        $i++;
-}
-$cache->save('dbs', $dbs, 10);
+$dbs = $cache->fetch('dbs');
 
 # Script
 $listener_object = $cache->fetch($settings->get('LISTENER'));
 
-if (!$listener_object || !is_array($listener_object)) die();
+$info = array(
+    'TIME_START' => date('Ymd\THis',time()),
+    'WAS_STOPED' => (!$listener_object || !is_array($listener_object))?"True":"False",
+    'RUNNING' => (!$listener_object || !is_array($listener_object))?"False":"True",
+    'COMMANDS' => $listener_object,
+    'RPS_PREV' => count($cache->fetch('RPS')),
+);
 
+$filename = Path::join([$output->get('logs'),'BOT_'.$info['TIME_START'].'.log']);
+file_put_contents($filename, print_r($info, 1));
+if ((!$listener_object || !is_array($listener_object))) die();
+
+unset($listener_object[$instruction]);
+$cache->save($settings->get('LISTENER'), []);
 foreach ($listener_object as $instruction)
 {
     if ($instruction == 'update')
     {
+        echo "UPDATE....";
         $rps = [];
+        $i = 0; $_i = count($dbs);
         foreach ($dbs as $db_slug) {
+            $i++;
             $q = $master->using($db_slug)->query($dbq->getRegPatDic());
             $q->execute();
             $rows = $q->fetchAll();
+            echo round($i/$_i*100)."% [{$i}/{$_i}] [{$db_slug}] = RPS(".count($rps).")\t\t\t\t\r";
 
             foreach ($rows as $row) {
                 $rps[$row['cregistroimss']][] = $db_slug;
             }
         }
+        echo "SAVING....";
         $cache->save("RPS", $rps);
-        unset($listener_object[$instruction]);
-        $cache->save($settings->get('LISTENER'), array_values($listener_object), 0);
+        echo "DONE....";
     }
 }
+
+$info['RPS_FOUND'] = count($rps);
+$info['TIME_END'] = date('Ymd\THis',time());
+$info['RUNNING'] = count($rps);
+
+file_put_contents($filename, print_r($info, 1));
