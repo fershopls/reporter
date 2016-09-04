@@ -1,3 +1,11 @@
+<?php
+
+require (realpath(__DIR__).'/../bootstrap.php');
+
+$DEFAULT_DATE = date("Y-m-d", time());
+$DEFAULT_FILENAME = date("Ymd\THis", time());
+$REGPAT = array_keys($cache->fetch('RPS'));
+?>
 <!DOCTYPE html>
 <html>
 
@@ -27,8 +35,11 @@
             <div class="row">
                 <div class="eight columns">
                     <label for="">Registro Patronal</label>
-                    <select name="" class="u-full-width">
-                        <option value=""></option>
+                    <select name="regpat" class="u-full-width">
+                        <?php
+                        foreach ($REGPAT as $r)
+                            echo '<option value="'.$r.'">'.$r.'</option>';
+                        ?>
                     </select>
                 </div>
                 <div class="four columns">
@@ -45,7 +56,10 @@
                 <div class="six columns">
                     <label for="">Tipo de Periodo</label>
                     <select class="u-full-width" name="" id="">
-                        <option value=""></option>
+                        <option value="semanal">SEMANAL</option>
+                        <option value="catorcenal">CATORCENAL</option>
+                        <option value="quicenal">QUINCENAL</option>
+                        <option value="mensual">MENSUAL</option>
                     </select>
                 </div>
             </div>
@@ -53,11 +67,11 @@
             <div class="row">
                 <div class="six columns">
                     <label for="">Fecha Inicial</label>
-                    <input class='u-full-width' type="date">
+                    <input class='u-full-width' type="date" value="<?php echo $DEFAULT_DATE ?>">
                 </div>
                 <div class="six columns">
                     <label for="">Fecha Final</label>
-                    <input class='u-full-width' type="date">
+                    <input class='u-full-width' type="date" value="<?php echo $DEFAULT_DATE ?>">
                 </div>
             </div>
 
@@ -79,7 +93,7 @@
             <div class="row">
                 <div class="eight columns">
                     <label for="">Nombre del Reporte</label>
-                    <input class="u-full-width" type="text" placeholder="20160913T143508" />
+                    <input class="u-full-width" type="text" placeholder="<?php echo $DEFAULT_FILENAME ?>" />
                 </div>
                 <div class="four columns">
                     <label for="">&nbsp;</label>

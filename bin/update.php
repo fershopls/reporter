@@ -1,8 +1,6 @@
 <?php
-define("MASTER_DIR", realpath(__DIR__).'/..');
-require MASTER_DIR . '/vendor/autoload.php';
 
-date_default_timezone_set("America/Mexico_City");
+require realpath(__DIR__) . '/../bootstrap.php';
 
 use Phine\Path\Path;
 use lib\Data\OutputManager;

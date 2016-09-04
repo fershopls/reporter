@@ -1,13 +1,7 @@
 <?php
-define("MASTER_DIR", realpath(__DIR__));
-define("MASTER_DEBUG", true);
-require MASTER_DIR . '/vendor/autoload.php';
-
+require realpath(__DIR__) . '/bootstrap.php';
 
 use Phine\Path\Path;
-use lib\Data\OutputManager;
-use lib\Settings\SettingsManager;
-use lib\Cache\CacheDriver;
 use lib\Data\StringKey;
 
 use lib\PDO\MasterPDO;
@@ -24,18 +18,7 @@ $_parameters = array(
     'period_end'    => '20160701 00:00',
 );
 
-function dd ($string = '', $return = 0) { if (!MASTER_DEBUG) return; echo $string . "\t\t\t\t\t"; if ($return) echo "\r"; else echo "\n";}
-
-# Global Libraries
-
-$settings = new SettingsManager(include(Path::join([MASTER_DIR, 'support', 'config.php'])));
-
-$output = new OutputManager($settings->get('DIRS'));
-$output->setAlias('/^(\%[\\\\\/]?)/', MASTER_DIR . DIRECTORY_SEPARATOR);
-
-$cache = new CacheDriver($output->get('cache'));
-
-
+function dd ($string = '', $return = 0) { echo $string . "\t\t\t\t\t"; if ($return) echo "\r"; else echo "\n";}
 
 $master = new MasterPDO(array(
     'hosting' => $settings->get('SQLSRV.database'),
