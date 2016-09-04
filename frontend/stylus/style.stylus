@@ -1,0 +1,61 @@
+html,body
+  height 100%
+  background-color transparent
+  font-family "Josefin Sans", sans-serif
+  font-size 16px
+.particles
+  background-color currentColor
+  top 0
+  left 0
+  bottom 0
+  right 0
+  position fixed
+  z-index 1
+.wrap
+  position relative
+  z-index 2
+  background-color white
+  max-width 800px
+  margin 40px auto
+  box-shadow 0 0 10px 0px rgba(black,0.1)
+  padding 40px 0 
+  box-sizing border-box
+  *:focus
+    box-shadow none
+    outline none
+  .header
+    text-align center
+    text-transform uppercase
+    font-size 4em
+    padding-bottom 20px
+  p
+    margin 0
+    font-size 20px
+    color #333
+    
+    
+// Manifest User Interface
+$primary = #9b59b6
+$primary-dark = #8e44ad
+.text-center
+  text-align center
+a
+  color $primary
+  font-weight bold
+  text-decoration none
+  &:hover
+    color $primary-dark
+  &:focus
+    text-decoration underline
+input
+  &:focus
+    border-color $primary !important
+    
+.button.primary
+    border-color $primary-dark
+    background-color $primary-dark
+    color white
+    &:hover, &:focus
+      background-color $primary
+      color white
+  
