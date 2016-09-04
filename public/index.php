@@ -78,8 +78,8 @@ $REGPAT = array_keys($cache->fetch('RPS'));
 
             <div class="row text-center">
                 <div class="six columns">
-                    <label for="option[workers_net]">
-                        <input name="option[workers_net]" type="checkbox" />
+                    <label for="options[workers_net]">
+                        <input name="options[workers_net]" type="checkbox" />
                         Incluir empleados con neto 0
                     </label>
                 </div>
