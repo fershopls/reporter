@@ -19,9 +19,15 @@ use Phine\Path\Path;
  *
  * */
 
-$filename = date('YmdHis', time());
-$filepath = Path::join([$output->get('request'), $filename . '.json']);
-file_put_contents($filepath, json_encode($_POST));
+if (isset($_POST['update_regpat']))
+{
+    $cache->save($settings->get('LISTENER'), ['update']);
+} else {
+    $filename = date('YmdHis', time());
+    $filepath = Path::join([$output->get('request'), $filename . '.json']);
+    file_put_contents($filepath, json_encode($_POST));
+}
+
 
 ?>
 If your browser does not redirect you automatically click <a href="index.php">here</a>

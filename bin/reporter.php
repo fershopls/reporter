@@ -12,11 +12,24 @@ use lib\Data\DataHandler;
 use lib\CSV\CSV;
 
 # User Input
-
 $_parameters = array(
+    'regpat' => '',
+    'exercise' => '',
+    'period_type' => '',
     'period_begin'  => '20160101 00:00',
     'period_end'    => '20160701 00:00',
 );
+
+$requests_dir = scandir($output->get('request'));
+array_shift($requests_dir);array_shift($requests_dir);
+
+foreach ($requests_dir as $request_file)
+{
+    $path = Path::join([$output->get('request'), $request_file]);
+    $_parameters = \lib\Cache\Serializer::unserialize($request_file, true);
+    unlink($path);
+}
+
 
 function dd ($string = '', $return = 0) { echo $string . "\t\t\t\t\t"; if ($return) echo "\r"; else echo "\n";}
 
@@ -56,6 +69,8 @@ $dbs = $cache->fallback('dbs', [$master, $dbq], function(MasterPDO $master, Data
 $dbi->setDatabases($dbs);
 dd("DBS: (".count($dbs).") Loaded.");
 
+if (count($requests_dir) == 0)
+    die();
 
 
 # Methods
@@ -106,15 +121,27 @@ $db_concept_ordered = [
 ];
 foreach ($db_worker_dic as $db_slug => $workers)
 {
+    $has_reg_pat = array_filter($db_regpat_dic[$db_slug], function ($ob) use ($_parameters){
+        return ($ob[1]==$_parameters['regpat'])?true:false;
+    });
+    if (count($has_reg_pat) == 0)
+        continue;
     dd("[{$db_slug}]");
     $w = 0; $w_num = count($workers);
     foreach ($workers as $worker)
     {
         $w++; $used['workers']++;
+        $period_type = array_filter($db_period_type_dic[$db_slug], function ($ob) use ($_parameters) {
+            return ($ob['key']==StringKey::get($_parameters['period_type']))?true:false;
+        });
+        if (count($period_type) == 0) continue;
+        $period_type = array_values($period_type)[0]['idtipoperiodo'];
         $params = [
             'worker_id' => $worker['idempleado'],
+            'period_type' => $period_type,
             'period_begin' => $_parameters['period_begin'],
             'period_end'   => $_parameters['period_end'],
+            'exercise'   => $_parameters['exercise'],
         ];
         $q = $master->using($db_slug)->prepare($dbq->getWorkerMovement());
         $_percent = round($w*100/$w_num);
@@ -150,6 +177,11 @@ foreach ($used as $str_used => $counter)
     $counter = is_array($counter)?count($counter):$counter;
     dd("({$counter}) {$str_used}");
 } dd();
+if (count($used['databases']) == 0)
+{
+    dd("[NULL] Databases. aborting.");
+    die();
+}
 
 
 # Prepare to Export
@@ -222,6 +254,6 @@ foreach ($csv_rows as $csv_row)
 }
 
 date_default_timezone_set("America/Mexico_City");
-$_output = Path::join([$output->get('output'), 'O'.date("YmdTHis",time()).'.csv']);
+$_output = Path::join([$output->get('output'), date("YmdTHis",time()).'_'.StringKey::get($_parameters['filename']).'.csv']);
 file_put_contents($_output, $csv->get());
 dd ("[CSV] [Done] ".$_output);

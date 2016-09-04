@@ -35,9 +35,9 @@ class DatabaseQuery
         return "SELECT conc.idconcepto, conc.descripcion, conc.tipoconcepto FROM nom10004 conc ORDER BY conc.tipoconcepto";
     }
 
-    public function getWorkerMovement ($worker_id = ':worker_id', $period_begin = ':period_begin', $period_end = ':period_end')
+    public function getWorkerMovement ($worker_id = ':worker_id', $period_begin = ':period_begin', $period_end = ':period_end', $exercise = ':exercise')
     {
-        return "SELECT mv.idconcepto, mv.idperiodo, mv.importetotal FROM [nom10007] mv, [nom10002] pr WHERE mv.idempleado = {$worker_id} AND pr.idperiodo = mv.idperiodo AND pr.fechainicio BETWEEN {$period_begin} AND {$period_end} AND mv.importetotal != 0 ORDER BY mv.idperiodo";
+        return "SELECT mv.idconcepto, mv.idperiodo, mv.importetotal FROM [nom10007] mv, [nom10002] pr WHERE mv.idempleado = {$worker_id} AND pr.idperiodo = mv.idperiodo AND pr.fechainicio BETWEEN {$period_begin} AND {$period_end} AND pr.ejercicio = {$exercise} AND mv.importetotal != 0 ORDER BY mv.idperiodo";
     }
     
 }
