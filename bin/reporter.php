@@ -1,5 +1,5 @@
 <?php
-require realpath(__DIR__) . '/bootstrap.php';
+require realpath(__DIR__) . '/../bootstrap.php';
 
 use Phine\Path\Path;
 use lib\Data\StringKey;

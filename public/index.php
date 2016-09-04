@@ -5,6 +5,12 @@ require (realpath(__DIR__).'/../bootstrap.php');
 $DEFAULT_DATE = date("Y-m-d", time());
 $DEFAULT_FILENAME = date("Ymd\THis", time());
 $REGPAT = array_keys($cache->fetch('RPS'));
+$PERIOD_TYPE = array(
+    'semanal',
+    'catorcenal',
+    'quincenal',
+    'mensual',
+);
 ?>
 <!DOCTYPE html>
 <html>
@@ -45,7 +51,7 @@ $REGPAT = array_keys($cache->fetch('RPS'));
                 </div>
                 <div class="four columns">
                     <label for="">&nbsp;</label>
-                    <input type="submit" class="u-full-width" name="SUBMIT" value="UPDATE_REGPAT" />
+                    <input type="submit" class="u-full-width" name="update_regpat" value="Update" />
                 </div>
             </div>
 
@@ -57,10 +63,10 @@ $REGPAT = array_keys($cache->fetch('RPS'));
                 <div class="six columns">
                     <label for="period_type">Tipo de Periodo</label>
                     <select class="u-full-width" name="period_type" id="">
-                        <option value="semanal">SEMANAL</option>
-                        <option value="catorcenal">CATORCENAL</option>
-                        <option value="quicenal">QUINCENAL</option>
-                        <option value="mensual">MENSUAL</option>
+                        <?php
+                        foreach ($PERIOD_TYPE as $r)
+                            echo '<option value="'.strtolower($r).'">'.strtoupper($r).'</option>';
+                        ?>
                     </select>
                 </div>
             </div>
@@ -98,7 +104,7 @@ $REGPAT = array_keys($cache->fetch('RPS'));
                 </div>
                 <div class="four columns">
                     <label for="">&nbsp;</label>
-                    <input class="u-full-width" type="submit" name="submit" value="CREATE_REPORT"/>
+                    <input class="u-full-width" type="submit" value="CREATE REPORT"/>
                 </div>
             </div>
 
