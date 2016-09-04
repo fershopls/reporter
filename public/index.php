@@ -30,11 +30,12 @@ $REGPAT = array_keys($cache->fetch('RPS'));
         <div class="header">
             Manifest UI
         </div>
+        <form action="process.php" method="POST">
         <div class="container">
 
             <div class="row">
                 <div class="eight columns">
-                    <label for="">Registro Patronal</label>
+                    <label for="regpat">Registro Patronal</label>
                     <select name="regpat" class="u-full-width">
                         <?php
                         foreach ($REGPAT as $r)
@@ -44,18 +45,18 @@ $REGPAT = array_keys($cache->fetch('RPS'));
                 </div>
                 <div class="four columns">
                     <label for="">&nbsp;</label>
-                    <input type="submit" class="u-full-width" value="UPDATE" />
+                    <input type="submit" class="u-full-width" name='submit' value="UPDATE" />
                 </div>
             </div>
 
             <div class="row">
                 <div class="six columns">
-                    <label for="">Ejercicio</label>
-                    <input class="u-full-width" type="number" value="2016" />
+                    <label for="exercise">Ejercicio</label>
+                    <input name="exercise" class="u-full-width" type="number" value="2016" />
                 </div>
                 <div class="six columns">
-                    <label for="">Tipo de Periodo</label>
-                    <select class="u-full-width" name="" id="">
+                    <label for="period_type">Tipo de Periodo</label>
+                    <select class="u-full-width" name="period_type" id="">
                         <option value="semanal">SEMANAL</option>
                         <option value="catorcenal">CATORCENAL</option>
                         <option value="quicenal">QUINCENAL</option>
@@ -66,25 +67,25 @@ $REGPAT = array_keys($cache->fetch('RPS'));
 
             <div class="row">
                 <div class="six columns">
-                    <label for="">Fecha Inicial</label>
-                    <input class='u-full-width' type="date" value="<?php echo $DEFAULT_DATE ?>">
+                    <label for="date_begin">Fecha Inicial</label>
+                    <input name="date_begin" class='u-full-width' type="date" value="<?php echo $DEFAULT_DATE ?>">
                 </div>
                 <div class="six columns">
-                    <label for="">Fecha Final</label>
-                    <input class='u-full-width' type="date" value="<?php echo $DEFAULT_DATE ?>">
+                    <label for="date_end">Fecha Final</label>
+                    <input name="date_end" class='u-full-width' type="date" value="<?php echo $DEFAULT_DATE ?>">
                 </div>
             </div>
 
             <div class="row text-center">
                 <div class="six columns">
-                    <label for="">
-                        <input type="checkbox" />
+                    <label for="option[workers_net]">
+                        <input name="option[workers_net]" type="checkbox" />
                         Incluir empleados con neto 0
                     </label>
                 </div>
                 <div class="six columns">
-                    <label for="">
-                        <input type="checkbox" />
+                    <label for="options[worker_down]">
+                        <input name="options[worker_down]" type="checkbox" />
                         Incluir empleados con baja
                     </label>
                 </div>
@@ -92,8 +93,8 @@ $REGPAT = array_keys($cache->fetch('RPS'));
 
             <div class="row">
                 <div class="eight columns">
-                    <label for="">Nombre del Reporte</label>
-                    <input class="u-full-width" type="text" placeholder="<?php echo $DEFAULT_FILENAME ?>" />
+                    <label for="filename">Nombre del Reporte</label>
+                    <input name="filename" class="u-full-width" type="text" placeholder="<?php echo $DEFAULT_FILENAME ?>" />
                 </div>
                 <div class="four columns">
                     <label for="">&nbsp;</label>
@@ -102,6 +103,7 @@ $REGPAT = array_keys($cache->fetch('RPS'));
             </div>
 
         </div>
+        </form>
     </div>
 
     <script src='js/particles.js'></script>

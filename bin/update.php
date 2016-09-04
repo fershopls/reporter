@@ -3,24 +3,12 @@
 require realpath(__DIR__) . '/../bootstrap.php';
 
 use Phine\Path\Path;
-use lib\Data\OutputManager;
-use lib\Settings\SettingsManager;
-use lib\Cache\CacheDriver;
-use lib\Data\StringKey;
 
 use lib\PDO\MasterPDO;
 use lib\Query\DatabaseQuery;
 use lib\PDO\DatabaseInterface;
 
 # Global Libraries
-
-$settings = new SettingsManager(include(Path::join([MASTER_DIR, 'support', 'config.php'])));
-
-$output = new OutputManager($settings->get('DIRS'));
-$output->setAlias('/^(\%[\\\\\/]?)/', MASTER_DIR . DIRECTORY_SEPARATOR);
-
-$cache = new CacheDriver($output->get('cache'));
-
 
 $master = new MasterPDO(array(
     'hosting' => $settings->get('SQLSRV.database'),
