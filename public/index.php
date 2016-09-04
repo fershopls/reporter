@@ -45,7 +45,7 @@ $REGPAT = array_keys($cache->fetch('RPS'));
                 </div>
                 <div class="four columns">
                     <label for="">&nbsp;</label>
-                    <input type="submit" class="u-full-width" name='submit' value="UPDATE" />
+                    <input type="submit" class="u-full-width" name="SUBMIT" value="UPDATE_REGPAT" />
                 </div>
             </div>
 
@@ -98,7 +98,7 @@ $REGPAT = array_keys($cache->fetch('RPS'));
                 </div>
                 <div class="four columns">
                     <label for="">&nbsp;</label>
-                    <input class="u-full-width" type="submit" value="Create"/>
+                    <input class="u-full-width" type="submit" name="submit" value="CREATE_REPORT"/>
                 </div>
             </div>
 
