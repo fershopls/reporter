@@ -53,15 +53,11 @@
             <div class="row">
                 <div class="six columns">
                     <label for="">Fecha Inicial</label>
-                    <select name="" id="" class="u-full-width">
-                        <option value=""></option>
-                    </select>
+                    <input class='u-full-width' type="date">
                 </div>
                 <div class="six columns">
                     <label for="">Fecha Final</label>
-                    <select name="" id="" class="u-full-width">
-                        <option value=""></option>
-                    </select>
+                    <input class='u-full-width' type="date">
                 </div>
             </div>
 
