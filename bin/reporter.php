@@ -16,19 +16,25 @@ $_parameters = array(
     'regpat' => '',
     'exercise' => '',
     'period_type' => '',
-    'period_begin'  => '20160101 00:00',
-    'period_end'    => '20160701 00:00',
+    'date_begin'  => '20160101 00:00',
+    'date_end'    => '20160701 00:00',
 );
 
 $requests_dir = scandir($output->get('request'));
 array_shift($requests_dir);array_shift($requests_dir);
+$requests_dir = array_values($requests_dir);
 
-foreach ($requests_dir as $request_file)
-{
-    $path = Path::join([$output->get('request'), $request_file]);
-    $_parameters = \lib\Cache\Serializer::unserialize($request_file, true);
-    unlink($path);
-}
+$path = Path::join([$output->get('request'), $requests_dir[0]]);
+$request_content = file_get_contents($path);
+$_parameters = \lib\Cache\Serializer::unserialize($request_content, true);
+$regex = '/^\d{4}\-\d{2}\-\d{2}$/i';
+if (!preg_match($regex, $_parameters['date_begin']) || !preg_match($regex, $_parameters['date_end']))
+    die("Dates aren't in html5 format: YYYY-MM-DD");
+$_parameters['date_begin'] = str_replace('-', '', $_parameters['date_begin']).' 00:00';
+$_parameters['date_end'] = str_replace('-', '', $_parameters['date_end']).' 00:00';
+#unlink($path);
+
+dd("Starting with parameters: ". json_encode($_parameters));
 
 
 function dd ($string = '', $return = 0) { echo $string . "\t\t\t\t\t"; if ($return) echo "\r"; else echo "\n";}
@@ -138,10 +144,10 @@ foreach ($db_worker_dic as $db_slug => $workers)
         $period_type = array_values($period_type)[0]['idtipoperiodo'];
         $params = [
             'worker_id' => $worker['idempleado'],
-            'period_type' => $period_type,
-            'period_begin' => $_parameters['period_begin'],
-            'period_end'   => $_parameters['period_end'],
+            'date_begin' => $_parameters['date_begin'],
+            'date_end'   => $_parameters['date_end'],
             'exercise'   => $_parameters['exercise'],
+            'period_type' => $period_type,
         ];
         $q = $master->using($db_slug)->prepare($dbq->getWorkerMovement());
         $_percent = round($w*100/$w_num);
