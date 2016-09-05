@@ -32,7 +32,7 @@ if (!preg_match($regex, $_parameters['date_begin']) || !preg_match($regex, $_par
     die("Dates aren't in html5 format: YYYY-MM-DD");
 $_parameters['date_begin'] = str_replace('-', '', $_parameters['date_begin']).' 00:00';
 $_parameters['date_end'] = str_replace('-', '', $_parameters['date_end']).' 00:00';
-#unlink($path);
+unlink($path);
 
 dd("Starting with parameters: ". json_encode($_parameters));
 
