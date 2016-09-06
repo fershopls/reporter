@@ -221,13 +221,14 @@ foreach ($db_worker_concept_dic as $db_slug => $_db_period)
             $csv_id = $period_id . $worker_id;
 
             $db_name = isset($db_string_dic[$db_slug])?$db_string_dic[$db_slug]:$db_slug;
-            $csv_rows[$csv_id][$dh->getConceptId('Database')] = $db_name;
-            $csv_rows[$csv_id][$dh->getConceptId('Worker code')] = $db_worker_dic[$db_slug][$worker_id]['codigoempleado'];
-            $csv_rows[$csv_id][$dh->getConceptId('Worker name')] = $db_worker_dic[$db_slug][$worker_id]['nombrelargo'];
-            $csv_rows[$csv_id][$dh->getConceptId('Period type')] = $_period_type_key;
-            $csv_rows[$csv_id][$dh->getConceptId('Period no.')] = $db_period_dic[$db_slug][$period_id]['numeroperiodo'];
-            $csv_rows[$csv_id][$dh->getConceptId('Period begin')] = $db_period_dic[$db_slug][$period_id]['fechainicio'];
-            $csv_rows[$csv_id][$dh->getConceptId('Period end')] = $db_period_dic[$db_slug][$period_id]['fechafin'];
+            $csv_rows[$csv_id][$dh->getConceptId('Factura')] = '';
+            $csv_rows[$csv_id][$dh->getConceptId('Empresa')] = $db_name;
+            $csv_rows[$csv_id][$dh->getConceptId('Codigo de Empleado')] = $db_worker_dic[$db_slug][$worker_id]['codigoempleado'];
+            $csv_rows[$csv_id][$dh->getConceptId('Nombre de Empleado')] = $db_worker_dic[$db_slug][$worker_id]['nombrelargo'];
+            $csv_rows[$csv_id][$dh->getConceptId('Tipo de Periodo')] = $_period_type_key;
+            $csv_rows[$csv_id][$dh->getConceptId('No. de Periodo')] = $db_period_dic[$db_slug][$period_id]['numeroperiodo'];
+            $csv_rows[$csv_id][$dh->getConceptId('Fecha Inicio')] = $db_period_dic[$db_slug][$period_id]['fechainicio'];
+            $csv_rows[$csv_id][$dh->getConceptId('Fecha Fin')] = $db_period_dic[$db_slug][$period_id]['fechafin'];
 
             $_concept_type_last = null;
             $_concept_type_total = 0;
