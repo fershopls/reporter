@@ -2,6 +2,8 @@
 
 require (realpath(__DIR__).'/../bootstrap.php');
 
+use lib\Data\StringKey;
+
 $DEFAULT_DATE = date("Y-m-d", time());
 $DEFAULT_FILENAME = date("Ymd\THis", time());
 $REGPAT = array_keys($cache->fetch('RPS'));
@@ -10,6 +12,8 @@ $PERIOD_TYPE = array(
     'catorcenal',
     'quincenal',
     'mensual',
+    'periodo extraordinario',
+    'cualquier periodo',
 );
 ?>
 <!DOCTYPE html>
@@ -61,11 +65,11 @@ $PERIOD_TYPE = array(
                     <input name="exercise" class="u-full-width" type="number" value="2016" />
                 </div>
                 <div class="six columns">
-                    <label for="period_type">Tipo de Periodo</label>
+                    <label for="period_typeWW">Tipo de Periodo</label>
                     <select class="u-full-width" name="period_type" id="">
                         <?php
                         foreach ($PERIOD_TYPE as $r)
-                            echo '<option value="'.strtolower($r).'">'.strtoupper($r).'</option>';
+                            echo '<option value="'.StringKey::get($r).'">'.strtoupper($r).'</option>';
                         ?>
                     </select>
                 </div>

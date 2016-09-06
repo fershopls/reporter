@@ -23,9 +23,12 @@ if (isset($_POST['update_regpat']))
 {
     $cache->save($settings->get('LISTENER'), ['update']);
 } else {
+    $parameters = $_POST;
+    $parameters['period_type'] = $parameters['period_type']=='cualquierperiodo'?'':$parameters['period_type'];
+
     $filename = date('YmdHis', time());
     $filepath = Path::join([$output->get('request'), $filename . '.json']);
-    file_put_contents($filepath, json_encode($_POST));
+    file_put_contents($filepath, json_encode($parameters));
 }
 
 

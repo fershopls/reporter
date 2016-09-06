@@ -146,19 +146,21 @@ foreach ($db_worker_dic as $db_slug => $workers)
     foreach ($workers as $worker)
     {
         $w++; $used['workers']++;
-        $period_type = array_filter($db_period_type_dic[$db_slug], function ($ob) use ($_parameters) {
-            return ($ob['key']==StringKey::get($_parameters['period_type']))?true:false;
-        });
-        if (count($period_type) == 0) continue;
-        $period_type = array_values($period_type)[0]['idtipoperiodo'];
+        if ($_parameters['period_type']=='')
+            $period_type = array_filter($db_period_type_dic[$db_slug], function ($ob) use ($_parameters) {
+                return ($ob['key']==StringKey::get($_parameters['period_type']))?true:false;
+            });
+        if (count($period_type) == 0 && $_parameters['period_type']!='')
+            continue;
         $params = [
             'worker_id' => $worker['idempleado'],
             'date_begin' => $_parameters['date_begin'],
             'date_end'   => $_parameters['date_end'],
             'exercise'   => $_parameters['exercise'],
-            'period_type' => $period_type,
         ];
-        $q = $master->using($db_slug)->prepare($dbq->getWorkerMovement());
+        if ($_parameters['period_type']!='')
+            $params['period_type'] = array_values($period_type)[0]['idtipoperiodo'];
+        $q = $master->using($db_slug)->prepare($dbq->getWorkerMovement(':worker_id', ':date_begin', ':date_end', ':exercise', ($_parameters['period_type']==false?false:null)));
         $_percent = round($w*100/$w_num);
         dd ("{$_percent}% [{$w}/$w_num] -> {$worker['idempleado']} Query...", 1);
         $q->execute($params);
