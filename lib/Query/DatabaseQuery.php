@@ -10,6 +10,11 @@ class DatabaseQuery
         return "SELECT [RutaEmpresa] FROM [nomGenerales].[dbo].[NOM10000] GROUP BY [RutaEmpresa]";
     }
 
+    public function getDatabaseStringDic ()
+    {
+        return "SELECT nombrecorto FROM nom10000;";
+    }
+
     public function getDatabaseWorkerDic()
     {
         return "SELECT w.idempleado, w.nombrelargo, w.codigoempleado FROM nom10001 w ORDER BY w.codigoempleado";

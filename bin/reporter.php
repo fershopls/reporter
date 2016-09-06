@@ -24,6 +24,8 @@ $requests_dir = scandir($output->get('request'));
 array_shift($requests_dir);array_shift($requests_dir);
 $requests_dir = array_values($requests_dir);
 
+if (count($requests_dir) == 0) die("No requests.");
+
 $path = Path::join([$output->get('request'), $requests_dir[0]]);
 $request_content = file_get_contents($path);
 $_parameters = \lib\Cache\Serializer::unserialize($request_content, true);
@@ -89,6 +91,13 @@ $dbi->callback('dic',function ($req, $res) {
 
 
 # DBI Dictionaries
+
+$db_string_dic = $dbi->set($dbq->getDatabaseStringDic())
+    ->execute(function($req, $res)
+    {
+        $res[$req['database']] = $req['row']['nombrecorto'];
+        return $res;
+    });
 
 $db_worker_dic = $dbi->set($dbq->getDatabaseWorkerDic())
     ->execute('dic');
@@ -211,7 +220,8 @@ foreach ($db_worker_concept_dic as $db_slug => $_db_period)
 
             $csv_id = $period_id . $worker_id;
 
-            $csv_rows[$csv_id][$dh->getConceptId('Database')] = $db_slug;
+            $db_name = isset($db_string_dic[$db_slug])?$db_string_dic[$db_slug]:$db_slug;
+            $csv_rows[$csv_id][$dh->getConceptId('Database')] = $db_name;
             $csv_rows[$csv_id][$dh->getConceptId('Worker code')] = $db_worker_dic[$db_slug][$worker_id]['codigoempleado'];
             $csv_rows[$csv_id][$dh->getConceptId('Worker name')] = $db_worker_dic[$db_slug][$worker_id]['nombrelargo'];
             $csv_rows[$csv_id][$dh->getConceptId('Period type')] = $_period_type_key;
