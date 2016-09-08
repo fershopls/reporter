@@ -142,7 +142,7 @@ $db_key_concept_dic = $dbi->set($dbq->getConceptDic())
 
 # Solve Relationships
 $log->dd(['debug'], "Preparing to preparing to walk through every available database.");
-$used ['databases'] = []; $used ['workers'] = 0;
+$used ['databases'] = []; $used ['workers'] = 0; $used['databases_skipped_by_rp'] = 0;
 $used ['workers_dumped'] = 0; $used ['rows'] = 0;
 #
 $db_worker_concept_dic = [];
@@ -154,11 +154,15 @@ $db_concept_ordered = [
 ];
 foreach ($db_worker_dic as $db_slug => $workers)
 {
+    echo "\r\r";
     $has_reg_pat = array_filter($db_regpat_dic[$db_slug], function ($ob) use ($_parameters){
         return ($ob[1]==$_parameters['regpat'])?true:false;
     });
     if (count($has_reg_pat) == 0)
+    {
+        $used['databases_skipped_by_rp']++;
         continue;
+    }
     dd("[{$db_slug}]");
     $w = 0; $w_num = count($workers);
     foreach ($workers as $worker)
@@ -170,7 +174,10 @@ foreach ($db_worker_dic as $db_slug => $workers)
             });
         $period_type = isset($period_type)?$period_type:[];
         if (count($period_type) == 0 && $_parameters['period_type']!='')
+        {
+            $used['period_type_is_empty'] = 1+(isset($used['period_type_is_empty'])?$used['period_type_is_empty']:0);
             continue;
+        }
         $params = [
             'worker_id' => $worker['idempleado'],
             'date_begin' => $_parameters['date_begin'],
