@@ -1,6 +1,8 @@
 <?php
 require realpath(__DIR__) . '/../bootstrap.php';
 
+use lib\Log\Log;
+
 use Phine\Path\Path;
 use lib\Data\StringKey;
 
@@ -11,6 +13,9 @@ use lib\PDO\DatabaseInterface;
 use lib\Data\DataHandler;
 use lib\CSV\CSV;
 
+# Logger instance
+$log = new Log($output->get('logs'));
+
 # User Input
 $_parameters = array(
     'regpat' => '',
@@ -20,23 +25,25 @@ $_parameters = array(
     'date_end'    => '20160701 00:00',
 );
 
+$log->dd(['debug'], "Start to scan dir `".$output->get('request')."`");
 $requests_dir = scandir($output->get('request'));
 array_shift($requests_dir);array_shift($requests_dir);
 $requests_dir = array_values($requests_dir);
 
-if (count($requests_dir) == 0) die("No requests.");
-
+$log->dd(['debug'], "Getting first request and unserializing it.");
 $path = Path::join([$output->get('request'), $requests_dir[0]]);
 $request_content = file_get_contents($path);
 $_parameters = \lib\Cache\Serializer::unserialize($request_content, true);
+
+$log->dd(['debug'], "Parameters.", $_parameters);
 $regex = '/^\d{4}\-\d{2}\-\d{2}$/i';
 if (!preg_match($regex, $_parameters['date_begin']) || !preg_match($regex, $_parameters['date_end']))
     die("Dates aren't in html5 format: YYYY-MM-DD");
 $_parameters['date_begin'] = str_replace('-', '', $_parameters['date_begin']).' 00:00';
 $_parameters['date_end'] = str_replace('-', '', $_parameters['date_end']).' 00:00';
-unlink($path);
 
-dd("Starting with parameters: ". json_encode($_parameters));
+$log->dd(['debug'], "Unlinking `{$path}`");
+#unlink($path);
 
 
 function dd ($string = '', $return = 0) { echo $string . "\t\t\t\t\t"; if ($return) echo "\r"; else echo "\n";}
@@ -47,18 +54,19 @@ $master = new MasterPDO(array(
     'password' => $settings->get('SQLSRV.password'),
 ));
 
+$log->dd(['debug'], "Creating Databases Querys and Interfaces");
 $dbq = new DatabaseQuery();
 $dbi = new DatabaseInterface($master, [], $cache);
 
 
-
+$log->dd(['debug'], "Creating Data Handlers and CSV Interface");
 $dh = new DataHandler();
 $csv = new CSV();
 
 
-
-# Get Available Databases
-$dbs = $cache->fallback('dbs', [$master, $dbq], function(MasterPDO $master, DatabaseQuery $dbq){
+$log->dd(['dbs','debug'], "Getting available databases in cache");
+$dbs = $cache->fallback('dbs', [$master, $dbq], function(MasterPDO $master, DatabaseQuery $dbq) use ($log) {
+    $log->dd(['dbs','alert'], "Cache was not found. Researching again on `nomGenerales.db`");
     $dbs = [];
     $i = 0;
     $rows = $master->using('nomGenerales')
@@ -71,14 +79,17 @@ $dbs = $cache->fallback('dbs', [$master, $dbq], function(MasterPDO $master, Data
         else
             $i++;
     }
-    dd("DBS: (".count($dbs).") Found. ({$i}) Lost.");
+    $log->dd(['dbs','debug'], "Databases.", ['db_found'=>count($dbs), 'db_lost' => $i]);
     return $dbs;
 }, $settings->get('DEFAULT.cache_store_minutes', 30));
 $dbi->setDatabases($dbs);
-dd("DBS: (".count($dbs).") Loaded.");
+$log->dd(['dbs','debug'], "Databases loaded.", ['dbs_loaded'=>count($dbs)]);
 
 if (count($requests_dir) == 0)
+{
+    $log->dd(['debug'], "Program skiped because there is not requests.");
     die();
+}
 
 
 # Methods
@@ -91,7 +102,8 @@ $dbi->callback('dic',function ($req, $res) {
 
 
 # DBI Dictionaries
-
+$log->dd(['debug'], "Fetching databases tables and dictionaries.");
+$log->dd(['query','debug'], "Executing DB_STRING_DIC", ['query'=>$dbq->getDatabaseStringDic()]);
 $db_string_dic = $dbi->set($dbq->getDatabaseStringDic())
     ->execute(function($req, $res)
     {
@@ -99,21 +111,27 @@ $db_string_dic = $dbi->set($dbq->getDatabaseStringDic())
         return $res;
     });
 
+$log->dd(['query','debug'], "[1/6] Executing DB_WORKER_DIC", ['query'=>$dbq->getDatabaseWorkerDic()]);
 $db_worker_dic = $dbi->set($dbq->getDatabaseWorkerDic())
     ->execute('dic');
 
+$log->dd(['query','debug'], "[2/6] Executing DB_PERIOD_DIC", ['query'=>$dbq->getPeriodDic()]);
 $db_period_dic = $dbi->set($dbq->getPeriodDic())
     ->execute('dic');
 
+$log->dd(['query','debug'], "[3/6] Executing DB_PERIOD_TYPE_DIC", ['query'=>$dbq->getPeriodTypeDic()]);
 $db_period_type_dic = $dbi->set($dbq->getPeriodTypeDic())
     ->execute('dic');
 
+$log->dd(['query','debug'], "[4/6] Executing DB_REGPAT_DIC", ['query'=>$dbq->getRegPatDic()]);
 $db_regpat_dic = $dbi->set($dbq->getRegPatDic())
     ->execute('dic');
 
+$log->dd(['query','debug'], "[5/6] Executing DB_CONCEPT_DIC", ['query'=>$dbq->getConceptDic()]);
 $db_concept_dic = $dbi->set($dbq->getConceptDic())
     ->execute('dic');
 
+$log->dd(['query','debug'], "[6/6] Executing DB_KEY_CONCEPT_DIC", ['query'=>$dbq->getConceptDic()]);
 $db_key_concept_dic = $dbi->set($dbq->getConceptDic())
     ->execute(function($req, $res){
         $string = $req['row']['descripcion'];
@@ -123,7 +141,7 @@ $db_key_concept_dic = $dbi->set($dbq->getConceptDic())
 
 
 # Solve Relationships
-
+$log->dd(['debug'], "Preparing to preparing to walk through every available database.");
 $used ['databases'] = []; $used ['workers'] = 0;
 $used ['workers_dumped'] = 0; $used ['rows'] = 0;
 #
@@ -187,9 +205,11 @@ foreach ($db_worker_dic as $db_slug => $workers)
 
     }
 }
+$log->dd(['debug'], "Database walk through finished.");
 
 
 # Relationships Info
+$log->dd(['debug'], "DBWTH Info", $used);
 foreach ($used as $str_used => $counter)
 {
     $counter = is_array($counter)?count($counter):$counter;
@@ -203,7 +223,7 @@ if (count($used['databases']) == 0)
 
 
 # Prepare to Export
-dd ("[CSV] Preparing to export");
+$log->dd(['debug'],"Preparing rows to export");
 
 $concept_type_string = [
     "D" => 'Deducciones',
@@ -263,7 +283,7 @@ foreach ($db_worker_concept_dic as $db_slug => $_db_period)
 
 
 # Dump
-
+$log->dd(['CSV','debug'], "Ordering csv rows");
 $csv->writerow($dh->getHeaders());
 foreach ($csv_rows as $csv_row)
 {
@@ -273,7 +293,8 @@ foreach ($csv_rows as $csv_row)
     $csv->writerow($rows);
 }
 
+$log->dd(['debug'], "Starting to write CSV file");
 date_default_timezone_set("America/Mexico_City");
 $_output = Path::join([$output->get('output'), date("YmdTHis",time()).'_'.StringKey::get($_parameters['filename']).'.csv']);
 file_put_contents($_output, $csv->get());
-dd ("[CSV] [Done] ".$_output);
+$log->dd (['CSV','done'],$_output);
