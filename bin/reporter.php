@@ -150,6 +150,7 @@ foreach ($db_worker_dic as $db_slug => $workers)
             $period_type = array_filter($db_period_type_dic[$db_slug], function ($ob) use ($_parameters) {
                 return ($ob['key']==StringKey::get($_parameters['period_type']))?true:false;
             });
+        $period_type = isset($period_type)?$period_type:[];
         if (count($period_type) == 0 && $_parameters['period_type']!='')
             continue;
         $params = [
