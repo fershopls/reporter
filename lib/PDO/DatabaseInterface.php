@@ -2,11 +2,14 @@
 
 namespace lib\PDO;
 
+use lib\Log\Log;
 use lib\PDO\MasterPDO;
 use lib\Cache\CacheDriver;
+use Phine\Exception\Exception;
 
 class DatabaseInterface {
 
+    protected $log;
     protected $pdo;
     protected $databases_array;
     protected $cache_driver;
@@ -18,8 +21,9 @@ class DatabaseInterface {
     protected $cache_id;
     protected $cache_lifetime;
 
-    public function __construct(MasterPDO $master, $databases_array, CacheDriver $cache)
+    public function __construct(MasterPDO $master, $databases_array, CacheDriver $cache, Log $log)
     {
+        $this->log = $log;
         $this->pdo = $master;
         $this->databases_array = $databases_array;
         $this->cache_driver = $cache;
@@ -74,8 +78,13 @@ class DatabaseInterface {
         foreach ($this->databases_array as $database)
         {
             $request['database'] = $database;
-            $con = $this->pdo->using($database)
-                ->prepare($request['query']);
+            try {
+                $con = $this->pdo->using($database)
+                    ->prepare($request['query']);
+            } catch (Exception $e) {
+                $this->log->dd(['error'], "Database `{$database}` was not found. Check nomGenerales.");
+                continue;
+            }
             $con->execute($this->array_query);
             $rows = $con->fetchAll();
             foreach ($rows as $row)

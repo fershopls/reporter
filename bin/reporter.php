@@ -43,7 +43,7 @@ $_parameters['date_begin'] = str_replace('-', '', $_parameters['date_begin']).' 
 $_parameters['date_end'] = str_replace('-', '', $_parameters['date_end']).' 00:00';
 
 $log->dd(['debug'], "Unlinking `{$path}`");
-#unlink($path);
+unlink($path);
 
 
 function dd ($string = '', $return = 0) { echo $string . "\t\t\t\t\t"; if ($return) echo "\r"; else echo "\n";}
@@ -56,7 +56,7 @@ $master = new MasterPDO(array(
 
 $log->dd(['debug'], "Creating Databases Querys and Interfaces");
 $dbq = new DatabaseQuery();
-$dbi = new DatabaseInterface($master, [], $cache);
+$dbi = new DatabaseInterface($master, [], $cache, $log);
 
 
 $log->dd(['debug'], "Creating Data Handlers and CSV Interface");
@@ -75,9 +75,12 @@ $dbs = $cache->fallback('dbs', [$master, $dbq], function(MasterPDO $master, Data
     foreach ($rows as $row)
     {
         if (isset($row[0]) && $row[0] && $master->testConnection($row[0]))
-            $dbs[] = $master->using($row[0])?$row[0]:null;
-        else
+        {
+            if ($master->using($row[0]))
+                $dbs[] = $row[0];
+        } else {
             $i++;
+        }
     }
     $log->dd(['dbs','debug'], "Databases.", ['db_found'=>count($dbs), 'db_lost' => $i]);
     return $dbs;
@@ -186,7 +189,12 @@ foreach ($db_worker_dic as $db_slug => $workers)
         ];
         if ($_parameters['period_type']!='')
             $params['period_type'] = array_values($period_type)[0]['idtipoperiodo'];
-        $q = $master->using($db_slug)->prepare($dbq->getWorkerMovement(':worker_id', ':date_begin', ':date_end', ':exercise', ($_parameters['period_type']==false?false:null)));
+        try {
+            $q = $master->using($db_slug);
+        } catch (Exception $e) {
+            continue;
+        }
+        $q = $q->prepare($dbq->getWorkerMovement(':worker_id', ':date_begin', ':date_end', ':exercise', ($_parameters['period_type']==false?false:null)));
         $_percent = round($w*100/$w_num);
         dd ("{$_percent}% [{$w}/$w_num] -> {$worker['idempleado']} Query...", 1);
         $q->execute($params);

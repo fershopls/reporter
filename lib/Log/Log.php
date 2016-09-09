@@ -17,7 +17,7 @@ class Log {
 
     public function dump ($content)
     {
-        file_put_contents($this->route . DIRECTORY_SEPARATOR . $this->prefix . date("Ymd_His",time()) . '.log', $content, FILE_APPEND);
+        file_put_contents($this->route . DIRECTORY_SEPARATOR . $this->prefix . date("Ymd",time()) . '.log', $content, FILE_APPEND);
     }
     
     public function dd ($headers = [], $message, $data = [], $dump_file = true)

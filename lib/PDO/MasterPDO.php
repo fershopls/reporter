@@ -20,7 +20,7 @@ class MasterPDO {
             $connection = $this->connections_stack[$database_slug];
         } else {
             $connection = $this->createConnection($database_slug);
-            if ($stackable)
+            if ($connection && $stackable)
                 $this->connections_stack[$database_slug] = $connection;
         }
         return $connection->get();
@@ -28,7 +28,12 @@ class MasterPDO {
 
     protected function createConnection ($database_slug)
     {
-        return new Connection($this->credentials, $database_slug);
+        try {
+            $con = new Connection($this->credentials, $database_slug);
+        } catch (\Exception $e) {
+            return False;
+        }
+        return $con;
     }
 
     public function testConnection ($database_slug)
