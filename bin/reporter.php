@@ -30,6 +30,12 @@ $requests_dir = scandir($output->get('request'));
 array_shift($requests_dir);array_shift($requests_dir);
 $requests_dir = array_values($requests_dir);
 
+if (count($requests_dir) == 0)
+{
+    $log->dd(['debug'], "Program skiped because there is not requests.");
+    die();
+}
+
 $log->dd(['debug'], "Getting first request and unserializing it.");
 $path = Path::join([$output->get('request'), $requests_dir[0]]);
 $request_content = file_get_contents($path);
@@ -83,12 +89,6 @@ foreach ($rows as $row)
 $log->dd(['dbs','debug'], "Databases.", ['db_found'=>count($dbs), 'db_lost' => $i]);
 $dbi->setDatabases($dbs);
 $log->dd(['dbs','debug'], "Databases loaded.", ['dbs_loaded'=>count($dbs)]);
-
-if (count($requests_dir) == 0)
-{
-    $log->dd(['debug'], "Program skiped because there is not requests.");
-    die();
-}
 
 
 # Methods
