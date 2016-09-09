@@ -6,7 +6,7 @@ use lib\Data\StringKey;
 
 $DEFAULT_DATE = date("Y-m-d", time());
 $DEFAULT_FILENAME = date("Ymd\THis", time());
-$REGPAT = array_keys($cache->fetch('RPS'));
+$REGPAT = array_keys(($cache->fetch('RPS')?$cache->fetch('RPS'):[]));
 $PERIOD_TYPE = array(
     'semanal',
     'catorcenal',
