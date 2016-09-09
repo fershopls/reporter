@@ -21,10 +21,11 @@ $master = new MasterPDO(array(
 ));
 
 $dbq = new DatabaseQuery();
-$dbi = new DatabaseInterface($master, [], $cache);
+$dbi = new DatabaseInterface($master, [], $cache, $log);
 
 # Get Available Databases
 
+$log->dd(['dbs','debug'], "Starting to check available databases.");
 $dbs = [];
 $i = 0;
 $rows = $master->using('nomGenerales')
@@ -52,10 +53,15 @@ $info = array(
 );
 
 $filename = Path::join([$output->get('logs'),'BOT_'.$info['TIME_START'].'.log']);
-file_put_contents($filename, print_r($info, 1));
-if ((!$listener_object || !is_array($listener_object))) die();
+# file_put_contents($filename, print_r($info, 1));
+if ((!$listener_object || !is_array($listener_object))){
+    $log->dd(['alert'], 'Program stopped', $info);
+    die();
+}
 
 $cache->save($settings->get('LISTENER'), []);
+$rps = [];
+$log->dd(['debug'], 'Starting to walk through $listener_object.', $listener_object);
 foreach ($listener_object as $instruction)
 {
     if ($instruction == 'update')
@@ -83,5 +89,6 @@ foreach ($listener_object as $instruction)
 $info['RPS_FOUND'] = count($rps);
 $info['TIME_END'] = date('Ymd\THis',time());
 $info['RUNNING'] = count($rps);
+$log->dd(['debug'], "Done. Program finished with", $info);
 
-file_put_contents($filename, print_r($info, 1));
+#file_put_contents($filename, print_r($info, 1));
