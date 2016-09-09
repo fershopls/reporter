@@ -15,18 +15,22 @@ Copy `/config.php.txt` into a new folder called support: `/support/config.php`. 
 
 return array (
     'SQLSRV' => array(
-        'database' => 'DATABASE SERVER ADDRESS',
-        'username' => 'SQLSRV USERNAME',
-        'password' => 'SQLSRV PASSWORD',
+        'database' => '',
+        'username' => '',
+        'password' => '',
     ),
 
     'DIRS' => array(
-        'cache' => '%/support/cache/',
-        'output' => '%/',
+        'cache' => '%/support/cache',
+        'output' => '%/support/output',
+        'request' => '%/support/request',
+        'logs' => '%/support/logs',
     ),
 
     'DEFAULT' => array(
         'cache_store_minutes' => 120,
     ),
+
+    'LISTENER' => 'commands',
 );
 ```
