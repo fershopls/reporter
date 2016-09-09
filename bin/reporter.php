@@ -306,16 +306,19 @@ $log->dd (['CSV','done'],$_output);
 
 $log->dd(['mail','debug'], "Preparing to send mail..");
 
-$para = $settings->get('email');
-$asunto = 'Reporte Generado';
-$mensaje = "Su reporte se ha generado en `{$_output}`.";
-$cabeceras = 'From: noreply@tsl.com' . "\r\n".
-    'Reply-To: desarrollo@global-systems.mx' . "\r\n" .
-    'X-Mailer: PHP/' . phpversion();
+$para = $settings->get('email', false);
+if ($para)
+{
+    $asunto = 'Reporte Generado';
+    $mensaje = "Su reporte se ha generado en `{$_output}`.";
+    $cabeceras = 'From: noreply@tsl.com' . "\r\n".
+        'Reply-To: desarrollo@global-systems.mx' . "\r\n" .
+        'X-Mailer: PHP/' . phpversion();
 
-if(mail($para, $asunto, $mensaje, $cabeceras)) {
-    $log->dd(['mail','debug'],'Correo enviado correctamente');
-} else {
-    $log->dd(['mail','error'],'Error al enviar mensaje');
+    if(mail($para, $asunto, $mensaje, $cabeceras)) {
+        $log->dd(['mail','debug'],'Correo enviado correctamente');
+    } else {
+        $log->dd(['mail','error'],'Error al enviar mensaje');
+    }
 }
 ?>
