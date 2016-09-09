@@ -64,27 +64,23 @@ $dh = new DataHandler();
 $csv = new CSV();
 
 
-$log->dd(['dbs','debug'], "Getting available databases in cache");
-$dbs = $cache->fallback('dbs', [$master, $dbq], function(MasterPDO $master, DatabaseQuery $dbq) use ($log) {
-    $log->dd(['dbs','alert'], "Cache was not found. Researching again on `nomGenerales.db`");
-    $dbs = [];
-    $i = 0;
-    $rows = $master->using('nomGenerales')
-        ->query($dbq->getDatabaseDic())
-        ->fetchAll();
-    foreach ($rows as $row)
+$log->dd(['dbs','alert'], "Cache was not found. Researching again on `nomGenerales.db`");
+$dbs = [];
+$i = 0;
+$rows = $master->using('nomGenerales')
+    ->query($dbq->getDatabaseDic())
+    ->fetchAll();
+foreach ($rows as $row)
+{
+    if (isset($row[0]) && $row[0] && $master->testConnection($row[0]))
     {
-        if (isset($row[0]) && $row[0] && $master->testConnection($row[0]))
-        {
-            if ($master->using($row[0]))
-                $dbs[] = $row[0];
-        } else {
-            $i++;
-        }
+        if ($master->using($row[0]))
+            $dbs[] = $row[0];
+    } else {
+        $i++;
     }
-    $log->dd(['dbs','debug'], "Databases.", ['db_found'=>count($dbs), 'db_lost' => $i]);
-    return $dbs;
-}, $settings->get('DEFAULT.cache_store_minutes', 30));
+}
+$log->dd(['dbs','debug'], "Databases.", ['db_found'=>count($dbs), 'db_lost' => $i]);
 $dbi->setDatabases($dbs);
 $log->dd(['dbs','debug'], "Databases loaded.", ['dbs_loaded'=>count($dbs)]);
 

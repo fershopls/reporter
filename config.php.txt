@@ -8,11 +8,15 @@ return array (
     ),
 
     'DIRS' => array(
-        'cache' => '%/support/cache/',
-        'output' => '%/',
+        'cache' => '%/support/cache',
+        'output' => '%/support/output',
+        'request' => '%/support/request',
+        'logs' => '%/support/logs',
     ),
 
     'DEFAULT' => array(
         'cache_store_minutes' => 120,
     ),
+
+    'LISTENER' => 'commands',
 );
