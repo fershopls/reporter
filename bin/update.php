@@ -23,22 +23,6 @@ $master = new MasterPDO(array(
 $dbq = new DatabaseQuery();
 $dbi = new DatabaseInterface($master, [], $cache, $log);
 
-# Get Available Databases
-
-$log->dd(['dbs','debug'], "Starting to check available databases.");
-$dbs = [];
-$i = 0;
-$rows = $master->using('nomGenerales')
-    ->query($dbq->getDatabaseDic())
-    ->fetchAll();
-foreach ($rows as $row)
-{
-    if (isset($row[0]) && $row[0] && $master->testConnection($row[0]))
-        $dbs[] = $master->using($row[0])?$row[0]:null;
-    else
-        $i++;
-}
-$log->dd(['dbs','debug'], "Databases.", ['db_found'=>count($dbs), 'db_lost' => $i]);
 
 # Script
 $listener_object = $cache->fetch($settings->get('LISTENER'));
@@ -58,6 +42,25 @@ if ((!$listener_object || !is_array($listener_object))){
     $log->dd(['alert'], 'Program stopped', $info);
     die();
 }
+
+
+# Get Available Databases
+
+$log->dd(['dbs','debug'], "Starting to check available databases.");
+$dbs = [];
+$i = 0;
+$rows = $master->using('nomGenerales')
+    ->query($dbq->getDatabaseDic())
+    ->fetchAll();
+foreach ($rows as $row)
+{
+    if (isset($row[0]) && $row[0] && $master->testConnection($row[0]))
+        $dbs[] = $master->using($row[0])?$row[0]:null;
+    else
+        $i++;
+}
+$log->dd(['dbs','debug'], "Databases.", ['db_found'=>count($dbs), 'db_lost' => $i]);
+
 
 $cache->save($settings->get('LISTENER'), []);
 $rps = [];
