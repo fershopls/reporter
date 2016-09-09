@@ -7,6 +7,10 @@ use Phine\Path\Path;
 use lib\PDO\MasterPDO;
 use lib\Query\DatabaseQuery;
 use lib\PDO\DatabaseInterface;
+use lib\Log\Log;
+
+# Logger instance
+$log = new Log($output->get('logs'), 'U');
 
 # Global Libraries
 
@@ -21,10 +25,23 @@ $dbi = new DatabaseInterface($master, [], $cache);
 
 # Get Available Databases
 
-$dbs = $cache->fetch('dbs');
+$dbs = [];
+$i = 0;
+$rows = $master->using('nomGenerales')
+    ->query($dbq->getDatabaseDic())
+    ->fetchAll();
+foreach ($rows as $row)
+{
+    if (isset($row[0]) && $row[0] && $master->testConnection($row[0]))
+        $dbs[] = $master->using($row[0])?$row[0]:null;
+    else
+        $i++;
+}
+$log->dd(['dbs','debug'], "Databases.", ['db_found'=>count($dbs), 'db_lost' => $i]);
 
 # Script
 $listener_object = $cache->fetch($settings->get('LISTENER'));
+$listener_object = is_array($listener_object)?$listener_object:[];
 
 $info = array(
     'TIME_START' => date('Ymd\THis',time()),
@@ -38,7 +55,6 @@ $filename = Path::join([$output->get('logs'),'BOT_'.$info['TIME_START'].'.log'])
 file_put_contents($filename, print_r($info, 1));
 if ((!$listener_object || !is_array($listener_object))) die();
 
-unset($listener_object[$instruction]);
 $cache->save($settings->get('LISTENER'), []);
 foreach ($listener_object as $instruction)
 {
