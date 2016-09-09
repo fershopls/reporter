@@ -306,7 +306,7 @@ $log->dd (['CSV','done'],$_output);
 
 $log->dd(['mail','debug'], "Preparing to send mail..");
 
-$para = $settings->get('email', false);
+$para = $settings->get('EMAIL', false);
 if ($para)
 {
     $asunto = 'Reporte Generado';
