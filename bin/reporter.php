@@ -220,15 +220,12 @@ $log->dd(['debug'], "Database walk through finished.");
 
 
 # Relationships Info
+$used['databases_total'] = count($used['databases']);
 $log->dd(['debug'], "DBWTH Info", $used);
-foreach ($used as $str_used => $counter)
+
+if ($used['databases_total'] == 0)
 {
-    $counter = is_array($counter)?count($counter):$counter;
-    dd("({$counter}) {$str_used}");
-} dd();
-if (count($used['databases']) == 0)
-{
-    dd("[NULL] Databases. aborting.");
+    $log->dd(['alert'], "[NULL] Databases. aborting.");
     die();
 }
 
