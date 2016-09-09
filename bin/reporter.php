@@ -303,3 +303,19 @@ date_default_timezone_set("America/Mexico_City");
 $_output = Path::join([$output->get('output'), date("Ymd\THis",time()).'_'.StringKey::get($_parameters['filename']).'.csv']);
 file_put_contents($_output, $csv->get());
 $log->dd (['CSV','done'],$_output);
+
+$log->dd(['mail','debug'], "Preparing to send mail..");
+
+$para = $settings->get('email');
+$asunto = 'Reporte Generado';
+$mensaje = "Su reporte se ha generado en `{$_output}`.";
+$cabeceras = 'From: noreply@tsl.com' . "\r\n".
+    'Reply-To: desarrollo@global-systems.mx' . "\r\n" .
+    'X-Mailer: PHP/' . phpversion();
+
+if(mail($para, $asunto, $mensaje, $cabeceras)) {
+    $log->dd(['mail','debug'],'Correo enviado correctamente');
+} else {
+    $log->dd(['mail','error'],'Error al enviar mensaje');
+}
+?>
