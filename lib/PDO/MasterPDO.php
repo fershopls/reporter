@@ -28,12 +28,7 @@ class MasterPDO {
 
     protected function createConnection ($database_slug)
     {
-        try {
-            $con = new Connection($this->credentials, $database_slug);
-        } catch (\Exception $e) {
-            return False;
-        }
-        return $con;
+        return new Connection($this->credentials, $database_slug);
     }
 
     public function testConnection ($database_slug)
