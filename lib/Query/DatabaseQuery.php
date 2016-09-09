@@ -7,12 +7,7 @@ class DatabaseQuery
 
     public function getDatabaseDic()
     {
-        return "SELECT [RutaEmpresa] FROM [nomGenerales].[dbo].[NOM10000] GROUP BY [RutaEmpresa]";
-    }
-
-    public function getDatabaseStringDic ()
-    {
-        return "SELECT nombrecorto FROM nom10000;";
+        return "SELECT [RutaEmpresa], [NombreEmpresa] FROM [nomGenerales].[dbo].[NOM10000];";
     }
 
     public function getDatabaseWorkerDic()

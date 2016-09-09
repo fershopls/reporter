@@ -72,6 +72,7 @@ $csv = new CSV();
 
 $log->dd(['dbs','alert'], "Cache was not found. Researching again on `nomGenerales.db`");
 $dbs = [];
+$dbs_names = [];
 $i = 0;
 $rows = $master->using('nomGenerales')
     ->query($dbq->getDatabaseDic())
@@ -81,7 +82,10 @@ foreach ($rows as $row)
     if (isset($row[0]) && $row[0] && $master->testConnection($row[0]))
     {
         if ($master->using($row[0]))
+        {
             $dbs[] = $row[0];
+            $dbs_names [$row[0]] = $row[1];
+        }
     } else {
         $i++;
     }
@@ -102,13 +106,6 @@ $dbi->callback('dic',function ($req, $res) {
 
 # DBI Dictionaries
 $log->dd(['debug'], "Fetching databases tables and dictionaries.");
-$log->dd(['query','debug'], "Executing DB_STRING_DIC", ['query'=>$dbq->getDatabaseStringDic()]);
-$db_string_dic = $dbi->set($dbq->getDatabaseStringDic())
-    ->execute(function($req, $res)
-    {
-        $res[$req['database']] = $req['row']['nombrecorto'];
-        return $res;
-    });
 
 $log->dd(['query','debug'], "[1/6] Executing DB_WORKER_DIC", ['query'=>$dbq->getDatabaseWorkerDic()]);
 $db_worker_dic = $dbi->set($dbq->getDatabaseWorkerDic())
@@ -251,7 +248,7 @@ foreach ($db_worker_concept_dic as $db_slug => $_db_period)
 
             $csv_id = $period_id . $worker_id;
 
-            $db_name = isset($db_string_dic[$db_slug])?$db_string_dic[$db_slug]:$db_slug;
+            $db_name = isset($dbs_names[$db_slug])?$dbs_names[$db_slug]:$db_slug;
             $csv_rows[$csv_id][$dh->getConceptId('Factura')] = '';
             $csv_rows[$csv_id][$dh->getConceptId('Empresa')] = $db_name;
             $csv_rows[$csv_id][$dh->getConceptId('Codigo de Empleado')] = $db_worker_dic[$db_slug][$worker_id]['codigoempleado'];
@@ -303,6 +300,6 @@ foreach ($csv_rows as $csv_row)
 
 $log->dd(['debug'], "Starting to write CSV file");
 date_default_timezone_set("America/Mexico_City");
-$_output = Path::join([$output->get('output'), date("YmdTHis",time()).'_'.StringKey::get($_parameters['filename']).'.csv']);
+$_output = Path::join([$output->get('output'), date("Ymd\THis",time()).'_'.StringKey::get($_parameters['filename']).'.csv']);
 file_put_contents($_output, $csv->get());
 $log->dd (['CSV','done'],$_output);
