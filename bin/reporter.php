@@ -223,6 +223,23 @@ $log->dd(['debug'], "DBWTH Info", $used);
 if ($used['databases_total'] == 0)
 {
     $log->dd(['alert'], "[NULL] Databases. aborting.");
+    $log->dd(['mail','debug'], "Preparing to send mail..");
+
+    $para = $settings->get('EMAIL', false);
+    if ($para)
+    {
+        $asunto = 'Reporte Vacio';
+        $mensaje = "Su reporte no abarca ningun registro.\r\n\r\n Parametros: ".json_encode($_parameters);
+        $cabeceras = 'From: noreply@tsl.com' . "\r\n".
+            'Reply-To: desarrollo@global-systems.mx' . "\r\n" .
+            'X-Mailer: PHP/' . phpversion();
+
+        if(mail($para, $asunto, $mensaje, $cabeceras)) {
+            $log->dd(['mail','debug'],'Correo enviado correctamente');
+        } else {
+            $log->dd(['mail','error'],'Error al enviar mensaje');
+        }
+    }
     die();
 }
 
@@ -246,7 +263,7 @@ foreach ($db_worker_concept_dic as $db_slug => $_db_period)
             $_period_type_id = $db_period_dic[$db_slug][$period_id]['idtipoperiodo'];
             $_period_type_key = $db_period_type_dic[$db_slug][$_period_type_id]['key'];
 
-            $csv_id = $period_id . $worker_id;
+            $csv_id = md5($db_slug).$period_id.$worker_id;
 
             $db_name = isset($dbs_names[$db_slug])?$dbs_names[$db_slug]:$db_slug;
             $csv_rows[$csv_id][$dh->getConceptId('Factura')] = '';
