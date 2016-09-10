@@ -317,7 +317,8 @@ foreach ($csv_rows as $csv_row)
 
 $log->dd(['debug'], "Starting to write CSV file");
 date_default_timezone_set("America/Mexico_City");
-$_output = Path::join([$output->get('output'), date("Ymd\THis",time()).'_'.StringKey::get($_parameters['filename']).'.csv']);
+$filename = date("Ymd\THis",time()).'_'.StringKey::get($_parameters['filename']).'.csv';
+$_output = Path::join([$output->get('output'), $filename]);
 file_put_contents($_output, $csv->get());
 $log->dd (['CSV','done'],$_output);
 
@@ -327,7 +328,7 @@ $para = $settings->get('EMAIL', false);
 if ($para)
 {
     $asunto = 'Reporte Generado';
-    $mensaje = "Su reporte se ha generado en `{$_output}`.";
+    $mensaje = "Su reporte se ha generado en `\\\\SERVIDORHP\\output\\{$filename}`.";
     $cabeceras = 'From: noreply@tsl.com' . "\r\n".
         'Reply-To: desarrollo@global-systems.mx' . "\r\n" .
         'X-Mailer: PHP/' . phpversion();
