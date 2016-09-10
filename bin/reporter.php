@@ -168,7 +168,7 @@ foreach ($db_worker_dic as $db_slug => $workers)
     $w = 0; $w_num = count($workers);
     foreach ($workers as $worker)
     {
-        if ($_parameters['options']['worker_down'] == false && $db_worker_dic[$worker['idempleado']]['bajaimss'] == 1)
+        if ($_parameters['options']['worker_down'] == false && $db_worker_dic[$db_slug][$worker['idempleado']]['bajaimss'] == 1)
             continue;
 
         $w++; $used['workers']++;
@@ -195,7 +195,7 @@ foreach ($db_worker_dic as $db_slug => $workers)
         } catch (Exception $e) {
             continue;
         }
-        $q = $q->prepare($dbq->getWorkerMovement(':worker_id', ':date_begin', ':date_end', ':exercise', ($_parameters['period_type']?':period_type':false)));
+        $q = $q->prepare($dbq->getWorkerMovement(':worker_id', ':date_begin', ':date_end', ':exercise', ($_parameters['period_type']!=''?':period_type':false)));
         $_percent = round($w*100/$w_num);
         dd ("{$_percent}% [{$w}/$w_num] -> {$worker['idempleado']} Query...", 1);
         $q->execute($params);

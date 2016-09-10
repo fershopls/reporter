@@ -38,7 +38,7 @@ $PERIOD_TYPE = array(
 
     <div class="wrap">
         <div class="header">
-            Manifest UI
+            Lista de Raya
         </div>
         <?php
         if (isset($_GET['success']) && $_GET['success']=='true')
