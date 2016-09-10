@@ -23,6 +23,10 @@ $_parameters = array(
     'period_type' => '',
     'date_begin'  => '20160101 00:00',
     'date_end'    => '20160701 00:00',
+    'options' => [
+        'worker_net' => false,
+        'worker_down' => false,
+    ],
 );
 
 $log->dd(['debug'], "Start to scan dir `".$output->get('request')."`");
@@ -163,6 +167,9 @@ foreach ($db_worker_dic as $db_slug => $workers)
     $w = 0; $w_num = count($workers);
     foreach ($workers as $worker)
     {
+        if ($_parameters['options']['worker_down'] && $db_worker_dic[$worker['idempleado']]['bajaimss'] == 1)
+            continue;
+
         $w++; $used['workers']++;
 
         $period_type = array_filter($db_period_type_dic[$db_slug], function ($ob) use ($_parameters) {

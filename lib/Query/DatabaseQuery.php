@@ -12,7 +12,7 @@ class DatabaseQuery
 
     public function getDatabaseWorkerDic()
     {
-        return "SELECT w.idempleado, w.nombrelargo, w.codigoempleado FROM nom10001 w ORDER BY w.codigoempleado";
+        return "SELECT w.idempleado, w.nombrelargo, w.codigoempleado, w.bajaimss FROM nom10001 w ORDER BY w.codigoempleado;";
     }
 
     public function getPeriodTypeDic()

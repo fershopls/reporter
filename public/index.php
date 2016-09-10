@@ -96,8 +96,8 @@ $PERIOD_TYPE = array(
 
             <div class="row text-center">
                 <div class="six columns">
-                    <label for="options[workers_net]">
-                        <input name="options[workers_net]" type="checkbox" />
+                    <label for="options[worker_net]">
+                        <input name="options[worker_net]" type="checkbox" />
                         Incluir empleados con neto 0
                     </label>
                 </div>

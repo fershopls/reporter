@@ -14,7 +14,7 @@ use Phine\Path\Path;
  * - [date_end]         Date en formato YYYY-MM-DD
  * - [filename]         Nombre del reporte
  * - [options]          Opciones Extras
- *   > [workers_net]    Existe y contiene `on` en caso de ser activado
+ *   > [worker_net]    Existe y contiene `on` en caso de ser activado
  *   > [worker_down]    Existe y contiene `on` en caso de ser activado
  *
  * */
