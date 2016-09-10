@@ -40,6 +40,14 @@ $PERIOD_TYPE = array(
         <div class="header">
             Manifest UI
         </div>
+        <?php
+        if (isset($_GET['success']) && $_GET['success']=='true')
+        {
+        ?>
+            <div style="background-color:lightgreen; color:darkgreen; padding:15px; text-align:center; margin-bottom: 20px;">Tu reporte está siendo creado! Por favor, se paciente.</div>
+        <?php
+        }
+        ?>
         <form action="process.php" method="POST">
         <div class="container">
 

@@ -33,5 +33,5 @@ if (isset($_POST['update_regpat']))
 
 
 ?>
-If your browser does not redirect you automatically click <a href="index.php">here</a>
-<script>window.location = 'index.php';</script>
+If your browser does not redirect you automatically click <a href="index.php?success=true">here</a>
+<script>window.location = 'index.php?success=true';</script>
