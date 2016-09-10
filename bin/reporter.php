@@ -44,7 +44,7 @@ if (count($requests_dir) == 0)
 $log->dd(['debug'], "Getting first request and unserializing it.");
 $path = Path::join([$output->get('request'), $requests_dir[0]]);
 $request_content = file_get_contents($path);
-$_parameters = \lib\Cache\Serializer::unserialize($request_content, true);
+$_parameters = array_merge($_parameters, \lib\Cache\Serializer::unserialize($request_content, true));
 
 $log->dd(['debug'], "Parameters.", $_parameters);
 $regex = '/^\d{4}\-\d{2}\-\d{2}$/i';
