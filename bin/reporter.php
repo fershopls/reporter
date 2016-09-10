@@ -167,7 +167,7 @@ foreach ($db_worker_dic as $db_slug => $workers)
     $w = 0; $w_num = count($workers);
     foreach ($workers as $worker)
     {
-        if ($_parameters['options']['worker_down'] && $db_worker_dic[$worker['idempleado']]['bajaimss'] == 1)
+        if ($_parameters['options']['worker_down'] == false && $db_worker_dic[$worker['idempleado']]['bajaimss'] == 1)
             continue;
 
         $w++; $used['workers']++;
