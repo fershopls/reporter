@@ -110,12 +110,17 @@ $PERIOD_TYPE = array(
             </div>
 
             <div class="row">
-                <div class="eight columns">
+                <div class="six columns">
                     <label for="filename">Nombre del Reporte</label>
                     <input name="filename" class="u-full-width" type="text" placeholder="<?php echo $DEFAULT_FILENAME ?>" />
                 </div>
-                <div class="four columns">
-                    <label for="">&nbsp;</label>
+                <div class="six columns">
+                    <label for="email">Correo Electrónico</label>
+                    <input name="email" type="email" class="u-full-width" placeholder="persona@example.com">
+                </div>
+            </div>
+            <div class="row">
+                <div class="twelve columns">
                     <input class="u-full-width" type="submit" value="CREATE REPORT"/>
                 </div>
             </div>
