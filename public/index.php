@@ -44,7 +44,7 @@ $PERIOD_TYPE = array(
         if (isset($_GET['success']) && $_GET['success']=='true')
         {
         ?>
-            <div style="background-color:lightgreen; color:darkgreen; padding:15px; text-align:center; margin-bottom: 20px;">Tu reporte está siendo creado! Por favor, se paciente.</div>
+            <div style="background-color:lightgreen; color:darkgreen; padding:15px; text-align:center; margin-bottom: 20px;">Tu reporte está siendo creado! Por favor se paciente, te llegará un correo una vez que esté listo.</div>
         <?php
         }
         ?>

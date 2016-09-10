@@ -23,6 +23,7 @@ $_parameters = array(
     'period_type' => '',
     'date_begin'  => '20160101 00:00',
     'date_end'    => '20160701 00:00',
+    'email' => '',
     'options' => [
         'worker_net' => false,
         'worker_down' => false,
@@ -232,7 +233,7 @@ if ($used['databases_total'] == 0)
     $log->dd(['alert'], "[NULL] Databases. aborting.");
     $log->dd(['mail','debug'], "Preparing to send mail..");
 
-    $para = $settings->get('EMAIL', false);
+    $para = $_parameters['email'];
     if ($para)
     {
         $asunto = 'Reporte Vacio';
@@ -331,7 +332,7 @@ $log->dd (['CSV','done'],$_output);
 
 $log->dd(['mail','debug'], "Preparing to send mail..");
 
-$para = $settings->get('EMAIL', false);
+$para = $_parameters['email'];
 if ($para)
 {
     $asunto = 'Reporte Generado';
