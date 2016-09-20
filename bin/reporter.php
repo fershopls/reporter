@@ -274,7 +274,7 @@ foreach ($db_worker_concept_dic as $db_slug => $_db_period)
             $csv_id = md5($db_slug).$period_id.$worker_id;
 
             $db_name = isset($dbs_names[$db_slug])?$dbs_names[$db_slug]:$db_slug;
-            $csv_rows[$csv_id][$dh->getConceptId('Factura')] = '';
+            $csv_rows[$csv_id][$dh->getConceptId('Factura')] = $db_worker_dic[$db_slug][$worker_id]['campoextra1'];
             $csv_rows[$csv_id][$dh->getConceptId('Empresa')] = $db_name;
             $csv_rows[$csv_id][$dh->getConceptId('Codigo de Empleado')] = $db_worker_dic[$db_slug][$worker_id]['codigoempleado'];
             $csv_rows[$csv_id][$dh->getConceptId('Nombre de Empleado')] = $db_worker_dic[$db_slug][$worker_id]['nombrelargo'];
@@ -336,7 +336,7 @@ $para = $_parameters['email'];
 if ($para)
 {
     $asunto = 'Reporte Generado';
-    $mensaje = "Su reporte se ha generado en `\\\\SERVIDORHP\\output\\{$filename}`.";
+    $mensaje = "Su reporte se ha generado en \\\\192.168.2.200\\output\\{$filename}.";
     $cabeceras = 'From: noreply@tsl.com' . "\r\n".
         'Reply-To: desarrollo@global-systems.mx' . "\r\n" .
         'X-Mailer: PHP/' . phpversion();
